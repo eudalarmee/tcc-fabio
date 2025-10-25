@@ -22,13 +22,8 @@ export default function Header() {
 
   return (
     <header 
-      className={`
-        fixed top-0 left-0 right-0 z-50 transition-all duration-300
-        ${scrolled 
-          ? 'bg-[#0D1117]/95 backdrop-blur-md py-3 shadow-lg' 
-          : 'bg-[#0D1117]/80 py-5'
-        }
-      `}
+      className="fixed top-0 left-0 right-0 z-[9999] transition-all duration-300 bg-[#0D1117] py-5 shadow-lg border-b-2 border-[#FF6A3D]"
+      style={{ minHeight: '80px' }}
     >
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         {/* Logo MUSCLEMAX com gradiente no MAX */}
@@ -44,15 +39,29 @@ export default function Header() {
         </Link>
 
         {/* Navegação desktop */}
-        <nav className="hidden md:flex items-center space-x-8 text-sm font-semibold uppercase tracking-wide">
+        <nav className="flex items-center space-x-4 md:space-x-8 text-xs md:text-sm font-semibold uppercase tracking-wide">
           <button
-            onClick={() => scrollToSection('exercicios')}
+            onClick={() => {
+              if (location.pathname === '/') {
+                scrollToSection('planilhas');
+              } else {
+                navigate('/');
+                setTimeout(() => scrollToSection('planilhas'), 100);
+              }
+            }}
             className="text-[#C7D0DD] hover:text-white transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-gradient-to-r after:from-[#FF6A3D] after:to-[#FF1493] hover:after:w-full after:transition-all after:duration-300 cursor-pointer"
           >
             Treinos
           </button>
           <button
-            onClick={() => scrollToSection('metodologia')}
+            onClick={() => {
+              if (location.pathname === '/') {
+                scrollToSection('metodologia');
+              } else {
+                navigate('/');
+                setTimeout(() => scrollToSection('metodologia'), 100);
+              }
+            }}
             className="text-[#C7D0DD] hover:text-white transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-gradient-to-r after:from-[#FF6A3D] after:to-[#FF1493] hover:after:w-full after:transition-all after:duration-300 cursor-pointer"
           >
             Metodologia
@@ -106,16 +115,6 @@ export default function Header() {
             </Link>
           )}
         </nav>
-
-        {/* Menu mobile (hambúrguer) - simplificado */}
-        <button 
-          className="md:hidden text-white"
-          aria-label="Menu"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
       </div>
     </header>
   );
