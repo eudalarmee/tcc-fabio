@@ -128,7 +128,7 @@ export default function AIChat() {
         `}
         aria-label="Assistente de IA"
       >
-        {/* Ícone de chat com efeito "pensando" */}
+        {/* Ícone de chat */}
         <svg 
           className="w-7 h-7 text-white transition-transform duration-300 group-hover:scale-110" 
           fill="none" 
@@ -142,14 +142,6 @@ export default function AIChat() {
             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
           />
         </svg>
-        
-        {/* Efeito de pulso pensando */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#FF6A3D] to-[#FF1493] opacity-75 animate-ping"></div>
-        
-        {/* Badge de notificação (opcional) */}
-        {!isOpen && messages.length === 1 && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse" />
-        )}
       </button>
 
       {/* Modal do chat */}

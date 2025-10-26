@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import AIChat from '../components/AIChat';
 import ImpactStats from '../components/ImpactStats';
 import { useDynamicPhrase } from '../hooks/useDynamicPhrase';
+import { useParallaxMouse } from '../hooks/useParallaxMouse';
 
 export default function Landing() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -18,6 +19,42 @@ export default function Landing() {
   
   // Hook para frase dinâmica por horário
   const dynamicPhrase = useDynamicPhrase();
+  
+  // Hook para parallax do mouse (efeito cinematográfico)
+  const mousePosition = useParallaxMouse(5);
+  
+  // Estado para controlar idle (sem interação)
+  const [isIdle, setIsIdle] = useState(false);
+
+  // Detectar idle do usuário (2-3 segundos sem interação)
+  useEffect(() => {
+    let idleTimer;
+    
+    const resetIdleTimer = () => {
+      setIsIdle(false);
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        setIsIdle(true);
+      }, 2500); // 2.5 segundos
+    };
+
+    // Eventos que resetam o idle
+    window.addEventListener('mousemove', resetIdleTimer);
+    window.addEventListener('keydown', resetIdleTimer);
+    window.addEventListener('scroll', resetIdleTimer);
+    window.addEventListener('click', resetIdleTimer);
+
+    // Iniciar timer
+    resetIdleTimer();
+
+    return () => {
+      clearTimeout(idleTimer);
+      window.removeEventListener('mousemove', resetIdleTimer);
+      window.removeEventListener('keydown', resetIdleTimer);
+      window.removeEventListener('scroll', resetIdleTimer);
+      window.removeEventListener('click', resetIdleTimer);
+    };
+  }, []);
 
   // Dados mockados de planilhas
   const mockPlanilhas = [
@@ -292,11 +329,14 @@ export default function Landing() {
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#FF1493] rounded-full blur-[150px] opacity-20"></div>
         </div>
         
-        {/* Imagem de fundo fitness com parallax e zoom sutil */}
+        {/* Imagem de fundo fitness com parallax sutil (mouse) e zoom */}
         <img 
           src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&h=1080&fit=crop" 
           alt="Atleta profissional em treino intenso na pista" 
-          className="absolute inset-0 w-full h-full object-cover parallax group-hover/hero:scale-105 transition-transform duration-700"
+          className="absolute inset-0 w-full h-full object-cover group-hover/hero:scale-105 transition-transform duration-700"
+          style={{
+            transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) scale(1.05)`
+          }}
         />
 
         {/* Conteúdo centralizado com animações */}
@@ -305,17 +345,26 @@ export default function Landing() {
             {dynamicPhrase}
           </p>
           
+          {/* Título principal com efeito de glow sutil na palavra ESTÉTICA */}
           <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-6 md:mb-6 leading-[1.2] md:leading-[1.1] tracking-[-0.02em] animate-fade-in px-2" style={{ animationDelay: '0.3s', fontWeight: '600', letterSpacing: '-0.02em' }}>
-            Estética de competição.<br />
+            <span 
+              className={`inline-block transition-all duration-[2000ms] ${
+                isIdle ? 'cinematic-glow' : ''
+              }`}
+            >
+              Estética
+            </span> de competição.<br />
             Performance sem limites.<br />
             Metodologia científica.
           </h1>
           
-          {/* Botões de CTA */}
+          {/* Botões de CTA com micro respiração */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 md:mb-8 animate-fade-in px-4 sm:px-0" style={{ animationDelay: '0.5s' }}>
             <button 
               onClick={() => scrollToSection('planilhas')}
-              className="btn-primary px-8 sm:px-10 py-3 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
+              className={`btn-primary px-8 sm:px-10 py-3 sm:py-4 text-sm sm:text-base w-full sm:w-auto transition-all duration-[4000ms] ${
+                isIdle ? 'cinematic-breathe' : ''
+              }`}
             >
               INICIAR JORNADA
             </button>
@@ -332,6 +381,38 @@ export default function Landing() {
           </p>
         </div>
       </section>
+
+      {/* Estilos CSS para efeitos cinematográficos */}
+      <style>{`
+        .cinematic-glow {
+          animation: subtleGlow 2s ease-in-out infinite;
+          filter: drop-shadow(0 0 20px rgba(255, 106, 61, 0.4)) drop-shadow(0 0 40px rgba(255, 20, 147, 0.3));
+        }
+        
+        .cinematic-breathe {
+          animation: subtleBreathe 4s ease-in-out infinite;
+        }
+        
+        @keyframes subtleGlow {
+          0%, 100% {
+            filter: drop-shadow(0 0 15px rgba(255, 106, 61, 0.3)) drop-shadow(0 0 30px rgba(255, 20, 147, 0.2));
+            opacity: 1;
+          }
+          50% {
+            filter: drop-shadow(0 0 25px rgba(255, 106, 61, 0.5)) drop-shadow(0 0 50px rgba(255, 20, 147, 0.4));
+            opacity: 0.95;
+          }
+        }
+        
+        @keyframes subtleBreathe {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.02);
+          }
+        }
+      `}</style>
 
       {/* ====================================
           CONTADORES DE IMPACTO
