@@ -168,42 +168,94 @@ Responda sempre em português do Brasil.`
 }
 
 /**
- * GEMINI - Integração com Google Gemini
+ * GEMINI - Integração REAL com Google Gemini (GRATUITO)
  */
 async function askGemini(message, conversationHistory) {
   if (!GEMINI_API_KEY) {
-    console.warn('VITE_GEMINI_API_KEY não configurada');
+    console.warn('⚠️ VITE_GEMINI_API_KEY não configurada - usando fallback');
     return await askMock(message, conversationHistory);
   }
 
-  // TODO: Descomentar quando tiver a API key
-  /*
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `Você é a IA assistente da MuscleMax. Contexto: ${JSON.stringify(conversationHistory)}\n\nUsuário: ${message}`
-              }
-            ]
-          }
-        ]
-      })
+  try {
+    // Construir contexto da conversa
+    let contextText = `Você é a assistente inteligente da MuscleMax, uma plataforma premium de treinos e performance.
+
+PERSONALIDADE:
+- Tom consultivo e profissional (como um treinador sério e experiente)
+- Respostas objetivas, precisas e diretas
+- Português natural, sem robótico
+- Evite emojis excessivos ou linguagem infantil
+
+CONTEXTO DA MUSCLEMAX:
+- Metodologia baseada em: Periodização Científica, Análise Biomecânica e Nutrição Integrada
+- Focamos em: hipertrofia, definição muscular, performance e estética de competição
+- Oferecemos planilhas personalizadas, acompanhamento profissional e tecnologia de ponta
+- Público-alvo: atletas sérios, pessoas comprometidas com resultados reais
+
+DIRETRIZES DE RESPOSTA:
+1. Inicie com "Para sua fase atual, eu recomendo..." quando der dicas
+2. Seja específico: cite exercícios, divisões de treino (ABC, ABCDE), periodização
+3. Se perguntarem sobre a plataforma, mencione os benefícios da MuscleMax
+4. Respostas curtas (2-4 frases), exceto quando pedirem detalhes
+5. Incentive, mas com seriedade — não seja "motivacional demais"
+
+`;
+
+    // Adicionar histórico recente
+    if (conversationHistory.length > 0) {
+      contextText += '\n\nHISTÓRICO DA CONVERSA:\n';
+      conversationHistory.slice(-4).forEach(msg => {
+        contextText += `${msg.role === 'user' ? 'Usuário' : 'Assistente'}: ${msg.content}\n`;
+      });
     }
-  );
 
-  const data = await response.json();
-  return data.candidates[0].content.parts[0].text;
-  */
+    contextText += `\n\nUsuário: ${message}\n\nAssistente:`;
 
-  return await askMock(message, conversationHistory);
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: contextText
+                }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 300,
+          }
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Erro Gemini:', errorData);
+      throw new Error(`Gemini API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+      return data.candidates[0].content.parts[0].text.trim();
+    } else {
+      throw new Error('Resposta inválida da API Gemini');
+    }
+    
+  } catch (error) {
+    console.error('Erro ao consultar Gemini:', error);
+    return await askMock(message, conversationHistory);
+  }
 }
 
 /**
