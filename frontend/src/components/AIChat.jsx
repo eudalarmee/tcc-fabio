@@ -249,7 +249,7 @@ export default function AIChat() {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Digite sua mensagem..."
+              placeholder="Pergunte qualquer coisa sobre treinos ou estratégia..."
               className="flex-1 bg-[#1C2330] text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A3D]"
               disabled={isLoading}
             />
@@ -266,7 +266,7 @@ export default function AIChat() {
           
           {/* Hint */}
           <p className="text-xs text-[#8A95A6] mt-2 text-center">
-            Modo: {import.meta.env.VITE_AI_PROVIDER || 'mock'} • Conversa salva por sessão
+            Assistente inteligente • Respostas em tempo real
           </p>
         </div>
       </div>
