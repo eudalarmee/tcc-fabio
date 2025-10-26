@@ -277,7 +277,7 @@ export default function Landing() {
       {/* ====================================
           HERO SECTION - Iniciar Jornada
           ==================================== */}
-      <section className="group/hero relative h-screen flex items-center justify-center overflow-hidden transition-all duration-700">
+      <section className="group/hero relative min-h-screen flex items-center justify-center overflow-hidden transition-all duration-700 py-20 md:py-0">
         {/* Overlay escuro para legibilidade - intensifica no hover */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70 group-hover/hero:from-black/85 group-hover/hero:via-black/70 group-hover/hero:to-black/85 z-10 transition-all duration-700"></div>
         
@@ -295,34 +295,34 @@ export default function Landing() {
         />
 
         {/* Conteúdo centralizado com animações */}
-        <div className="relative z-20 text-center px-4 max-w-5xl">
-          <p className="text-xs md:text-sm uppercase tracking-[0.2em] text-[#C7D0DD] mb-4 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <div className="relative z-20 text-center px-6 md:px-4 max-w-5xl mx-auto">
+          <p className="text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.2em] text-[#C7D0DD] mb-4 md:mb-4 animate-fade-in" style={{ animationDelay: '0.1s' }}>
             A PERFEIÇÃO NÃO É UM ACIDENTE
           </p>
           
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.1] tracking-[-0.02em] animate-fade-in" style={{ animationDelay: '0.3s', fontWeight: '600', letterSpacing: '-0.02em' }}>
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-6 md:mb-6 leading-[1.2] md:leading-[1.1] tracking-[-0.02em] animate-fade-in px-2" style={{ animationDelay: '0.3s', fontWeight: '600', letterSpacing: '-0.02em' }}>
             Estética de competição.<br />
             Performance sem limites.<br />
             Metodologia científica.
           </h1>
           
           {/* Botões de CTA */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 md:mb-8 animate-fade-in px-4 sm:px-0" style={{ animationDelay: '0.5s' }}>
             <button 
               onClick={() => scrollToSection('planilhas')}
-              className="btn-primary px-10 py-4"
+              className="btn-primary px-8 sm:px-10 py-3 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
             >
               INICIAR JORNADA
             </button>
             <button 
               onClick={() => scrollToSection('metodologia')}
-              className="btn-secondary px-10 py-4"
+              className="btn-secondary px-8 sm:px-10 py-3 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
             >
               VER METODOLOGIA →
             </button>
           </div>
 
-          <p className="text-xs uppercase tracking-wider text-[#8A95A6] animate-fade-in" style={{ animationDelay: '0.7s' }}>
+          <p className="text-[10px] sm:text-xs uppercase tracking-wider text-[#8A95A6] animate-fade-in" style={{ animationDelay: '0.7s' }}>
             Feito para quem não falta.
           </p>
         </div>

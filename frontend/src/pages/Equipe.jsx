@@ -99,22 +99,22 @@ export default function Equipe() {
     <div className="bg-[#0D1117] text-white min-h-screen">
       <Header />
 
-      <section className="pt-32 pb-12 px-4 md:px-6 lg:px-8" id="equipe">
+      <section className="pt-32 pb-12 px-6 md:px-6 lg:px-8" id="equipe">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 uppercase tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 md:mb-6 uppercase tracking-tight">
             EQUIPE
           </h1>
-          <p className="text-xl text-[#C7D0DD] max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-[#C7D0DD] max-w-2xl mx-auto px-4">
             Time focado em performance, estética e resultado.
           </p>
         </div>
       </section>
 
-      <section className="py-12 px-4 md:px-6 lg:px-8">
+      <section className="py-8 md:py-12 px-6 md:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           
           {/* LUCAS - Destaque sutil (primeira posição, centralizado) */}
-          <div className="flex justify-center mb-16">
+          <div className="flex justify-center mb-12 md:mb-16">
             <article
               ref={el => cardRefs.current[team[0].id] = el}
               data-person={team[0].id}
@@ -126,7 +126,7 @@ export default function Equipe() {
               onMouseMove={(e) => handleTilt(e, team[0].id)}
               onMouseLeave={() => resetTilt(team[0].id)}
             >
-              <div className="relative h-[420px] overflow-hidden">
+              <div className="relative h-[380px] sm:h-[420px] overflow-hidden">
                 <img 
                   src={team[0].photo} 
                   alt={`${team[0].name} - ${team[0].role} — MuscleMax`}
@@ -137,22 +137,22 @@ export default function Equipe() {
                 {/* Overlay + Frase no hover */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200"></div>
                 <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 flex items-center justify-center px-6 transition-all duration-200">
-                  <p className="text-white text-center text-lg md:text-xl font-bold tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-all duration-200" style={{textShadow: '0 2px 12px rgba(0,0,0,0.9)'}}>
+                  <p className="text-white text-center text-base sm:text-lg md:text-xl font-bold tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-all duration-200" style={{textShadow: '0 2px 12px rgba(0,0,0,0.9)'}}>
                     {team[0].frase}
                   </p>
                 </div>
               </div>
 
               {/* Footer com nome e cargo */}
-              <footer className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
-                <h3 className="text-white text-2xl font-bold uppercase tracking-tight mb-1">{team[0].name}</h3>
-                <p className="text-gray-300 text-sm font-medium">{team[0].role}</p>
+              <footer className="absolute bottom-0 left-0 right-0 p-4 md:p-5 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
+                <h3 className="text-white text-xl sm:text-2xl font-bold uppercase tracking-tight mb-1">{team[0].name}</h3>
+                <p className="text-gray-300 text-xs sm:text-sm font-medium">{team[0].role}</p>
               </footer>
             </article>
           </div>
 
           {/* EDUARDO, VICTOR, DAVI - Trio lado a lado */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
             {team.slice(1).map((member) => (
               <article
                 key={member.id}
@@ -166,7 +166,7 @@ export default function Equipe() {
                 onMouseMove={(e) => handleTilt(e, member.id)}
                 onMouseLeave={() => resetTilt(member.id)}
               >
-                <div className="relative h-[420px] overflow-hidden">
+                <div className="relative h-[380px] sm:h-[420px] overflow-hidden">
                   <img 
                     src={member.photo} 
                     alt={`${member.name} - ${member.role} — MuscleMax`}
@@ -177,16 +177,16 @@ export default function Equipe() {
                   {/* Overlay + Frase no hover */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200"></div>
                   <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 flex items-center justify-center px-6 transition-all duration-200">
-                    <p className="text-white text-center text-lg md:text-xl font-bold tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-all duration-200" style={{textShadow: '0 2px 12px rgba(0,0,0,0.9)'}}>
+                    <p className="text-white text-center text-base sm:text-lg md:text-xl font-bold tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-all duration-200" style={{textShadow: '0 2px 12px rgba(0,0,0,0.9)'}}>
                       {member.frase}
                     </p>
                   </div>
                 </div>
 
                 {/* Footer com nome e cargo */}
-                <footer className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
-                  <h3 className="text-white text-2xl font-bold uppercase tracking-tight mb-1">{member.name}</h3>
-                  <p className="text-gray-300 text-sm font-medium">{member.role}</p>
+                <footer className="absolute bottom-0 left-0 right-0 p-4 md:p-5 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
+                  <h3 className="text-white text-xl sm:text-2xl font-bold uppercase tracking-tight mb-1">{member.name}</h3>
+                  <p className="text-gray-300 text-xs sm:text-sm font-medium">{member.role}</p>
                 </footer>
               </article>
             ))}
