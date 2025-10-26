@@ -300,10 +300,10 @@ export default function Landing() {
             A PERFEIÇÃO NÃO É UM ACIDENTE
           </p>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            Metodologia científica.<br />
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.1] tracking-[-0.02em] animate-fade-in" style={{ animationDelay: '0.3s', fontWeight: '600', letterSpacing: '-0.02em' }}>
             Estética de competição.<br />
-            Performance sem limites.
+            Performance sem limites.<br />
+            Metodologia científica.
           </h1>
           
           {/* Botões de CTA */}
