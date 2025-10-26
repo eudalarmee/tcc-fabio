@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import AIChat from '../components/AIChat';
+import ImpactStats from '../components/ImpactStats';
+import { useDynamicPhrase } from '../hooks/useDynamicPhrase';
 
 export default function Landing() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -13,6 +15,9 @@ export default function Landing() {
   const [uploadedImage, setUploadedImage] = useState(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState(null)
+  
+  // Hook para frase dinâmica por horário
+  const dynamicPhrase = useDynamicPhrase();
 
   // Dados mockados de planilhas
   const mockPlanilhas = [
@@ -296,8 +301,8 @@ export default function Landing() {
 
         {/* Conteúdo centralizado com animações */}
         <div className="relative z-20 text-center px-6 md:px-4 max-w-5xl mx-auto">
-          <p className="text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.2em] text-[#C7D0DD] mb-4 md:mb-4 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            A PERFEIÇÃO NÃO É UM ACIDENTE
+          <p className="text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.2em] text-[#C7D0DD] mb-4 md:mb-4 animate-fade-in transition-all duration-500" style={{ animationDelay: '0.1s' }}>
+            {dynamicPhrase}
           </p>
           
           <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-6 md:mb-6 leading-[1.2] md:leading-[1.1] tracking-[-0.02em] animate-fade-in px-2" style={{ animationDelay: '0.3s', fontWeight: '600', letterSpacing: '-0.02em' }}>
@@ -327,6 +332,11 @@ export default function Landing() {
           </p>
         </div>
       </section>
+
+      {/* ====================================
+          CONTADORES DE IMPACTO
+          ==================================== */}
+      <ImpactStats />
 
       {/* ====================================
           SEÇÃO EXERCÍCIOS - Grid 3x2
