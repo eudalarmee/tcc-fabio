@@ -73,6 +73,18 @@ export default function Header() {
             Resultados
           </Link>
           <Link
+            to="/treinos"
+            className="text-[#C7D0DD] hover:text-white transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-gradient-to-r after:from-[#FF6A3D] after:to-[#FF1493] hover:after:w-full after:transition-all after:duration-300"
+          >
+            Criar Treino
+          </Link>
+          <Link
+            to="/meus-treinos"
+            className="text-[#C7D0DD] hover:text-white transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-gradient-to-r after:from-[#FF6A3D] after:to-[#FF1493] hover:after:w-full after:transition-all after:duration-300"
+          >
+            Meus Treinos
+          </Link>
+          <Link
             to="/equipe"
             className="text-[#C7D0DD] hover:text-white transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-gradient-to-r after:from-[#FF6A3D] after:to-[#FF1493] hover:after:w-full after:transition-all after:duration-300"
           >

@@ -12,6 +12,8 @@ import Equipe from "./pages/Equipe";
 import Resultados from "./pages/Resultados";
 import ModalidadeDetalhes from "./pages/ModalidadeDetalhes";
 import PlanilhaDetalhes from "./pages/PlanilhaDetalhes";
+import Treinos from "./pages/Treinos";
+import MeusTreinos from "./pages/MeusTreinos";
 
 export default function Router() {
   return (
@@ -28,6 +30,8 @@ export default function Router() {
         <Route path="/termos" element={<Termos />} />
         <Route path="/equipe" element={<Equipe />} />
         <Route path="/resultados" element={<Resultados />} />
+        <Route path="/treinos" element={<Treinos />} />
+        <Route path="/meus-treinos" element={<MeusTreinos />} />
         <Route path="/modalidade/:id" element={<ModalidadeDetalhes />} />
         <Route path="/planilha/:id" element={<PlanilhaDetalhes />} />
       </Routes>
