@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import dotenv from "dotenv";
+import workoutRoutes from "./routes/workout.routes.js";
+import exerciseRoutes from "./routes/exercise.routes.js";
 
 dotenv.config();
 
@@ -12,6 +14,11 @@ const prisma = new PrismaClient();
 
 app.use(express.json());
 app.use(cors());
+
+// Rotas de treino
+app.use('/api/workouts', workoutRoutes);
+// Rotas de exercícios
+app.use('/api/exercises', exerciseRoutes);
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const PORT = process.env.PORT || 5000;

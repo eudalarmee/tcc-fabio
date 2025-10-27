@@ -7,8 +7,11 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
     "prisma:push": "prisma db push",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "db:reset": "prisma migrate reset --force && ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",
@@ -19,7 +22,10 @@
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
+    "@types/node": "^24.9.1",
     "nodemon": "^3.1.10",
-    "prisma": "^6.18.0"
+    "prisma": "^6.18.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }
