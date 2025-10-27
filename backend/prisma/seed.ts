@@ -63,7 +63,14 @@ const exercises = [
 ];
 
 async function main() {
-  await prisma.exercise.createMany({ data: exercises, skipDuplicates: true });
+  // Limpar exercícios existentes
+  await prisma.exercise.deleteMany();
+  
+  // Inserir exercícios
+  for (const exercise of exercises) {
+    await prisma.exercise.create({ data: exercise });
+  }
+  
   console.log(`Seed OK: ${exercises.length} exercícios inseridos/atualizados.`);
 }
 
