@@ -14,6 +14,9 @@ import ModalidadeDetalhes from "./pages/ModalidadeDetalhes";
 import PlanilhaDetalhes from "./pages/PlanilhaDetalhes";
 import Treinos from "./pages/Treinos";
 import MeusTreinos from "./pages/MeusTreinos";
+import CriarTreino from "./pages/CriarTreino";
+import Admin from "./pages/Admin";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function Router() {
   return (
@@ -31,7 +34,24 @@ export default function Router() {
         <Route path="/equipe" element={<Equipe />} />
         <Route path="/resultados" element={<Resultados />} />
         <Route path="/treinos" element={<Treinos />} />
-        <Route path="/meus-treinos" element={<MeusTreinos />} />
+        
+        {/* Rotas Protegidas */}
+        <Route path="/meus-treinos" element={
+          <ProtectedRoute>
+            <MeusTreinos />
+          </ProtectedRoute>
+        } />
+        <Route path="/criar-treino" element={
+          <ProtectedRoute>
+            <CriarTreino />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin" element={
+          <ProtectedRoute>
+            <Admin />
+          </ProtectedRoute>
+        } />
+        
         <Route path="/modalidade/:id" element={<ModalidadeDetalhes />} />
         <Route path="/planilha/:id" element={<PlanilhaDetalhes />} />
       </Routes>

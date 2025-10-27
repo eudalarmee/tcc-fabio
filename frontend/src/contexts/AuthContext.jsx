@@ -2,68 +2,114 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Carregar sessão do localStorage ao montar
+  // Bootstrap: carregar sessão ao montar
   useEffect(() => {
-    const savedSession = localStorage.getItem('musclemax_session');
-    if (savedSession) {
-      try {
-        const session = JSON.parse(savedSession);
-        setUser(session);
-      } catch (error) {
-        console.error('Erro ao carregar sessão:', error);
-        localStorage.removeItem('musclemax_session');
-      }
-    }
-    setLoading(false);
+    bootstrap();
   }, []);
 
-  // Login funcional (front-end simulado)
-  const login = (email, senha) => {
-    // Validação básica
-    if (!email || !email.includes('@')) {
-      throw new Error('E-mail inválido');
+  const bootstrap = async () => {
+    try {
+      const savedToken = localStorage.getItem('musclemax_token');
+      
+      if (!savedToken) {
+        setLoading(false);
+        return;
+      }
+
+      // Valida token chamando /api/auth/me
+      const response = await fetch(`${API_URL}/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${savedToken}`
+        }
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+        setToken(savedToken);
+      } else {
+        // Token inválido, limpa
+        localStorage.removeItem('musclemax_token');
+      }
+    } catch (error) {
+      console.error('Erro ao validar sessão:', error);
+      localStorage.removeItem('musclemax_token');
+    } finally {
+      setLoading(false);
     }
-    if (!senha || senha.length < 4) {
-      throw new Error('Senha deve ter no mínimo 4 caracteres');
-    }
-
-    // Criar sessão simulada
-    const session = {
-      id: Date.now(),
-      email: email,
-      loggedAt: new Date().toISOString()
-    };
-
-    // Salvar no localStorage
-    localStorage.setItem('musclemax_session', JSON.stringify(session));
-    setUser(session);
-
-    return session;
   };
 
-  // Logout
+  const register = async (name, email, password) => {
+    try {
+      const response = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erro ao cadastrar');
+      }
+
+      // Salva token e user
+      localStorage.setItem('musclemax_token', data.token);
+      setToken(data.token);
+      setUser(data.user);
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const login = async (email, password) => {
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erro ao fazer login');
+      }
+
+      // Salva token e user
+      localStorage.setItem('musclemax_token', data.token);
+      setToken(data.token);
+      setUser(data.user);
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const logout = () => {
-    localStorage.removeItem('musclemax_session');
+    localStorage.removeItem('musclemax_token');
+    setToken(null);
     setUser(null);
-  };
-
-  // Pegar inicial do e-mail para o chip
-  const getInitial = () => {
-    if (!user || !user.email) return '';
-    return user.email.charAt(0).toUpperCase();
   };
 
   const value = {
     user,
+    token,
     loading,
+    register,
     login,
     logout,
-    getInitial,
-    isAuthenticated: !!user
+    isAuthenticated: !!token && !!user
   };
 
   return (

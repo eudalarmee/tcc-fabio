@@ -14,6 +14,7 @@ model User {
   password  String
   role      Role     @default(USER)
   workouts  Workout[]
+  trainings Training[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -33,6 +34,7 @@ model Exercise {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   items       WorkoutExercise[]
+  trainingItems TrainingExercise[]
 }
 
 model Workout {
@@ -59,3 +61,25 @@ model WorkoutExercise {
   @@unique([workoutId, orderIndex])
 }
 
+model Training {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  name        String
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  exercises   TrainingExercise[]
+}
+
+model TrainingExercise {
+  id          String   @id @default(cuid())
+  trainingId  String
+  exerciseId  String
+  orderIndex  Int      @default(0)
+  sets        Int      @default(3)
+  reps        String   @default("8-12")
+  rest        Int      @default(90) // segundos
+  training    Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  exercise    Exercise @relation(fields: [exerciseId], references: [id])
+}
