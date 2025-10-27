@@ -40,9 +40,9 @@ export default function Login() {
       setLoading(true);
       await login(formData.email, formData.password);
       
-      // Redireciona para a página de destino ou criar-treino
-      const redirect = searchParams.get('redirect') || '/criar-treino';
-      navigate(redirect);
+      // Redireciona para a página de destino ou home
+      const redirectTo = searchParams.get('redirect') || '/';
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err.message || 'Erro ao fazer login');
     } finally {

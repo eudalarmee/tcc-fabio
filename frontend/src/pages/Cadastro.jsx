@@ -46,9 +46,9 @@ export default function Cadastro() {
       setLoading(true);
       await register(formData.name, formData.email, formData.password);
       
-      // Redireciona para a página de destino ou criar-treino
-      const redirect = searchParams.get('redirect') || '/criar-treino';
-      navigate(redirect);
+      // Redireciona para a página de destino ou home
+      const redirectTo = searchParams.get('redirect') || '/';
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err.message || 'Erro ao cadastrar');
     } finally {
