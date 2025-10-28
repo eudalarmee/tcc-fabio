@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useWorkoutsAdapter } from '../lib/workoutsAdapter';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
-
 export default function MeusTreinos() {
-  const { user, token, isAuthenticated } = useAuth();
+  const { isGuest, isAuthenticated } = useAuth();
+  const workoutsAdapter = useWorkoutsAdapter();
   const navigate = useNavigate();
   
   const [trainings, setTrainings] = useState([]);
@@ -17,22 +17,13 @@ export default function MeusTreinos() {
   const [editingName, setEditingName] = useState('');
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
     fetchTrainings();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isGuest]);
 
   const fetchTrainings = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/trainings/mine`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
+      const data = await workoutsAdapter.list();
       setTrainings(data);
     } catch (error) {
       console.error('Erro ao buscar treinos:', error);
@@ -46,15 +37,7 @@ export default function MeusTreinos() {
     if (!confirm('Tem certeza que deseja excluir este treino?')) return;
     
     try {
-      const response = await fetch(`${API_URL}/trainings/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (!response.ok) throw new Error('Erro ao excluir treino');
-      
+      await workoutsAdapter.delete(id);
       alert('Treino excluído com sucesso!');
       fetchTrainings();
     } catch (error) {
@@ -75,17 +58,7 @@ export default function MeusTreinos() {
 
   const saveEdit = async (id) => {
     try {
-      const response = await fetch(`${API_URL}/trainings/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ name: editingName })
-      });
-      
-      if (!response.ok) throw new Error('Erro ao editar treino');
-      
+      await workoutsAdapter.update(id, { name: editingName });
       alert('Treino atualizado com sucesso!');
       setEditingId(null);
       fetchTrainings();
@@ -117,6 +90,22 @@ export default function MeusTreinos() {
       
       <div className="pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
+          {/* Banner Modo Visitante */}
+          {isGuest && (
+            <div className="mb-6 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">👤</span>
+                <div>
+                  <h3 className="font-bold text-yellow-500 mb-1">Modo Visitante</h3>
+                  <p className="text-sm text-[#C7D0DD]">
+                    Seus treinos estão salvos apenas neste navegador. <br/>
+                    <span className="text-white font-medium">Faça login ou cadastre-se</span> para sincronizar automaticamente com a nuvem!
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="mb-8 flex items-center justify-between">
             <div>
               <h1 className="text-5xl font-bold mb-4">

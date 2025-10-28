@@ -13,21 +13,26 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 // POST /api/auth/register - Cadastro de novo usuário
 router.post('/register', async (req, res) => {
   try {
+    console.log('📝 Tentativa de registro:', { body: req.body });
+    
     const { name, email, password } = req.body;
 
     // Validações
     if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Nome, email e senha são obrigatórios' });
+      console.log('❌ Validação falhou: campos obrigatórios');
+      return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ message: 'Senha deve ter no mínimo 6 caracteres' });
+      console.log('❌ Validação falhou: senha curta');
+      return res.status(400).json({ error: 'Senha deve ter no mínimo 6 caracteres' });
     }
 
     // Email válido (regex simples)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ message: 'Email inválido' });
+      console.log('❌ Validação falhou: email inválido');
+      return res.status(400).json({ error: 'Email inválido' });
     }
 
     // Verifica se email já existe
@@ -36,7 +41,8 @@ router.post('/register', async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(409).json({ message: 'Email já cadastrado' });
+      console.log('❌ Email já cadastrado:', email);
+      return res.status(409).json({ error: 'Email já cadastrado' });
     }
 
     // Hash da senha
@@ -51,6 +57,8 @@ router.post('/register', async (req, res) => {
         role: 'USER'
       }
     });
+
+    console.log('✅ Usuário criado com sucesso:', { id: user.id, email: user.email });
 
     // Gera JWT
     const token = jwt.sign(
@@ -67,10 +75,14 @@ router.post('/register', async (req, res) => {
       role: user.role
     };
 
-    res.status(201).json({ token, user: userWithoutPassword });
+    res.status(201).json({ 
+      success: true,
+      token, 
+      user: userWithoutPassword 
+    });
   } catch (error) {
-    console.error('Erro ao registrar usuário:', error);
-    res.status(500).json({ message: 'Erro ao registrar usuário' });
+    console.error('❌ Erro ao registrar usuário:', error);
+    res.status(500).json({ error: 'Erro ao registrar usuário' });
   }
 });
 
@@ -115,7 +127,11 @@ router.post('/login', async (req, res) => {
       role: user.role
     };
 
-    res.json({ token, user: userWithoutPassword });
+    res.json({ 
+      success: true,
+      token, 
+      user: userWithoutPassword 
+    });
   } catch (error) {
     console.error('Erro ao fazer login:', error);
     res.status(500).json({ message: 'Erro ao fazer login' });

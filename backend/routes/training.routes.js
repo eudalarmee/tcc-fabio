@@ -71,6 +71,66 @@ router.post('/trainings', requireAuth, async (req, res) => {
   }
 });
 
+// Importação em massa (bulk) - Usado na migração do modo visitante
+router.post('/trainings/bulk', requireAuth, async (req, res) => {
+  try {
+    const { items } = req.body;
+    const userId = req.user.id;
+    
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Lista de treinos vazia' });
+    }
+    
+    console.log(`🔄 Migrando ${items.length} treinos para usuário ${userId}`);
+    
+    const created = [];
+    
+    for (const workout of items) {
+      try {
+        // Cria o treino
+        const training = await prisma.training.create({
+          data: {
+            userId,
+            name: workout.name + ' (importado)',
+            notes: 'Migrado do modo visitante',
+            exercises: {
+              create: (workout.exercises || []).map((ex, idx) => ({
+                exerciseId: ex.id,
+                orderIndex: ex.orderIndex !== undefined ? ex.orderIndex : idx,
+                sets: ex.sets || 3,
+                reps: ex.reps || '8-12',
+                rest: ex.rest || 90
+              }))
+            }
+          },
+          include: {
+            exercises: {
+              include: { exercise: true },
+              orderBy: { orderIndex: 'asc' }
+            }
+          }
+        });
+        
+        created.push(training);
+        console.log(`✅ Treino "${training.name}" migrado com sucesso`);
+      } catch (err) {
+        console.error(`❌ Erro ao migrar treino "${workout.name}":`, err);
+        // Continua com os próximos mesmo se um falhar
+      }
+    }
+    
+    res.json({ 
+      success: true, 
+      migrated: created.length,
+      total: items.length,
+      trainings: created 
+    });
+  } catch (error) {
+    console.error('❌ Erro ao fazer bulk import:', error);
+    res.status(500).json({ error: 'Erro ao importar treinos' });
+  }
+});
+
 // Meus treinos (protegida)
 router.get('/trainings/mine', requireAuth, async (req, res) => {
   try {
@@ -213,6 +273,83 @@ router.delete('/trainings/:id', requireAuth, async (req, res) => {
   } catch (error) {
     console.error('Erro ao deletar treino:', error);
     res.status(500).json({ error: 'Erro ao deletar treino' });
+  }
+});
+
+// Migração em lote de treinos do modo visitante (protegida)
+router.post('/trainings/bulk', requireAuth, async (req, res) => {
+  try {
+    console.log('📦 Iniciando migração em lote de treinos...');
+    
+    const { items } = req.body;
+    const userId = req.user.id;
+    
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Nenhum treino para migrar' });
+    }
+
+    console.log(`📦 Migrando ${items.length} treinos para usuário ${userId}`);
+
+    const migratedTrainings = [];
+
+    for (const workout of items) {
+      try {
+        // Verifica se já existe treino com mesmo nome
+        const existing = await prisma.training.findFirst({
+          where: {
+            userId,
+            name: workout.name
+          }
+        });
+
+        const trainingName = existing 
+          ? `${workout.name} (importado ${new Date().toLocaleDateString()})` 
+          : workout.name;
+
+        // Cria o treino
+        const training = await prisma.training.create({
+          data: {
+            userId,
+            name: trainingName,
+            notes: workout.notes || null,
+            exercises: {
+              create: workout.exercises.map((ex, index) => ({
+                exerciseId: ex.id,
+                orderIndex: ex.orderIndex ?? index,
+                sets: ex.sets ?? 3,
+                reps: ex.reps ?? '8-12',
+                rest: ex.rest ?? 90,
+                notes: ex.notes || null
+              }))
+            }
+          },
+          include: {
+            exercises: {
+              include: { exercise: true },
+              orderBy: { orderIndex: 'asc' }
+            }
+          }
+        });
+
+        migratedTrainings.push(training);
+        console.log(`✅ Treino migrado: ${trainingName}`);
+      } catch (error) {
+        console.error(`❌ Erro ao migrar treino "${workout.name}":`, error);
+        // Continua mesmo se um treino falhar
+      }
+    }
+
+    console.log(`✅ Migração concluída: ${migratedTrainings.length}/${items.length} treinos`);
+
+    res.status(201).json({ 
+      success: true,
+      migrated: migratedTrainings.length,
+      total: items.length,
+      trainings: migratedTrainings
+    });
+  } catch (error) {
+    console.error('❌ Erro na migração em lote:', error);
+    res.status(500).json({ error: 'Erro ao migrar treinos' });
   }
 });
 

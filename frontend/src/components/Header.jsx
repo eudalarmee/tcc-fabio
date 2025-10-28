@@ -9,8 +9,14 @@ export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, getInitial, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const { scrollToSection } = useSmartScroll();
+
+  // Função para pegar inicial do nome do usuário
+  const getInitial = () => {
+    if (!user?.name) return '?';
+    return user.name.charAt(0).toUpperCase();
+  };
 
   // Detecta scroll para adicionar efeito de condensação + blur
   useEffect(() => {

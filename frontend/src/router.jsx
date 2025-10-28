@@ -35,17 +35,11 @@ export default function Router() {
         <Route path="/resultados" element={<Resultados />} />
         <Route path="/treinos" element={<Treinos />} />
         
-        {/* Rotas Protegidas */}
-        <Route path="/meus-treinos" element={
-          <ProtectedRoute>
-            <MeusTreinos />
-          </ProtectedRoute>
-        } />
-        <Route path="/criar-treino" element={
-          <ProtectedRoute>
-            <CriarTreino />
-          </ProtectedRoute>
-        } />
+        {/* Rotas de Treinos - Permitem modo visitante */}
+        <Route path="/meus-treinos" element={<MeusTreinos />} />
+        <Route path="/criar-treino" element={<CriarTreino />} />
+        
+        {/* Rotas Protegidas (exigem autenticação) */}
         <Route path="/admin" element={
           <ProtectedRoute>
             <Admin />

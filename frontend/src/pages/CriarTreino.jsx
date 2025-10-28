@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useWorkoutsAdapter } from '../lib/workoutsAdapter';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
 const MUSCLE_GROUPS = [
   { name: 'Costas', icon: '💪', color: 'from-blue-500 to-cyan-500' },
@@ -18,7 +19,8 @@ const MUSCLE_GROUPS = [
 ];
 
 export default function CriarTreino() {
-  const { user, token, isAuthenticated } = useAuth();
+  const { isGuest, isAuthenticated } = useAuth();
+  const workoutsAdapter = useWorkoutsAdapter();
   const navigate = useNavigate();
   
   const [allExercises, setAllExercises] = useState([]);
@@ -28,12 +30,8 @@ export default function CriarTreino() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
     fetchExercises();
-  }, [isAuthenticated, navigate]);
+  }, []);
 
   const fetchExercises = async () => {
     try {
@@ -80,29 +78,25 @@ export default function CriarTreino() {
     try {
       setSaving(true);
       
-      const items = selectedIds.map((exerciseId, index) => ({
-        exerciseId,
-        orderIndex: index,
-        sets: 3,
-        reps: '8-12',
-        rest: 90
-      }));
-
-      const response = await fetch(`${API_URL}/trainings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: trainingName,
-          items
-        })
+      // Formato para API (quando autenticado)
+      const exercises = selectedIds.map((exerciseId, index) => {
+        const exercise = allExercises.find(ex => ex.id === exerciseId);
+        return {
+          exerciseId: exerciseId,  // API espera 'exerciseId'
+          orderIndex: index,
+          sets: 3,
+          reps: '8-12',
+          restSec: 90,
+        };
       });
 
-      if (!response.ok) throw new Error('Erro ao salvar treino');
+      // Usa o adapter que decide se salva local ou na API
+      await workoutsAdapter.create({
+        title: trainingName,  // API espera 'title' não 'name'
+        exercises
+      });
 
-      await response.json();
+      alert(isGuest ? 'Treino salvo localmente!' : 'Treino salvo com sucesso!');
       navigate('/meus-treinos');
       
     } catch (error) {
@@ -131,6 +125,22 @@ export default function CriarTreino() {
       
       <div className="pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
+          {/* Banner Modo Visitante */}
+          {isGuest && (
+            <div className="mb-6 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">👤</span>
+                <div>
+                  <h3 className="font-bold text-yellow-500 mb-1">Modo Visitante</h3>
+                  <p className="text-sm text-[#C7D0DD]">
+                    Este treino será salvo apenas neste navegador. <br/>
+                    <span className="text-white font-medium">Faça login ou cadastre-se</span> para sincronizar automaticamente com a nuvem!
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="mb-8">
             <h1 className="text-5xl font-bold mb-4">
               Criar <span className="bg-gradient-to-r from-[#FF6A3D] to-[#FF1493] bg-clip-text text-transparent">Novo Treino</span>
