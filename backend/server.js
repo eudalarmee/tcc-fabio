@@ -16,10 +16,34 @@ const app = express();
 const prisma = new PrismaClient();
 
 // Configuração de CORS ANTES de qualquer rota
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://tcc-fabio.vercel.app',
+  'https://tcc-fabio-git-main-eudalarmee.vercel.app',
+  /\.vercel\.app$/ // Aceita todos os subdomínios do Vercel
+];
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: (origin, callback) => {
+    // Permite requisições sem origin (como Postman)
+    if (!origin) return callback(null, true);
+    
+    // Verifica se a origin está na lista ou match com regex
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') return allowed === origin;
+      if (allowed instanceof RegExp) return allowed.test(origin);
+      return false;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
