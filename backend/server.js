@@ -21,6 +21,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'https://tcc-fabio.vercel.app',
   'https://tcc-fabio-git-main-eudalarmee.vercel.app',
+  'https://musclemaxxx.vercel.app',
   /\.vercel\.app$/ // Aceita todos os subdomínios do Vercel
 ];
 
