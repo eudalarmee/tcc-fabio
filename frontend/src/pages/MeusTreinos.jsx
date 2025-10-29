@@ -24,6 +24,9 @@ export default function MeusTreinos() {
     try {
       setLoading(true);
       const data = await workoutsAdapter.list();
+      console.log('🔍 [MeusTreinos] Treinos recebidos:', data);
+      console.log('🔍 [MeusTreinos] Primeiro treino:', data[0]);
+      console.log('🔍 [MeusTreinos] Exercícios do primeiro treino:', data[0]?.exercises);
       setTrainings(data);
     } catch (error) {
       console.error('Erro ao buscar treinos:', error);
