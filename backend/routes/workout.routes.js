@@ -176,6 +176,12 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Treino não encontrado' });
     }
 
+    // Deleta os exercícios do treino primeiro (para evitar erro de constraint)
+    await prisma.workoutExercise.deleteMany({
+      where: { workoutId: workoutId }
+    });
+
+    // Depois deleta o treino
     await prisma.workout.delete({
       where: { id: workoutId },
     });

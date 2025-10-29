@@ -55,7 +55,7 @@ model WorkoutExercise {
   sets        Int      @default(3)
   reps        String   @default("8-12")
   restSec     Int?
-  workout     Workout  @relation(fields: [workoutId], references: [id])
+  workout     Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exercise    Exercise @relation(fields: [exerciseId], references: [id])
 
   @@unique([workoutId, orderIndex])
