@@ -81,13 +81,38 @@ function createApiAdapter() {
     async list() {
       console.log('☁️ [API Adapter] Listando treinos da API');
       const response = await api.get('/workouts');
-      return response.data;
+      // Normaliza formato da API para o esperado pelo frontend
+      return response.data.map(workout => ({
+        ...workout,
+        name: workout.title, // API usa 'title', frontend espera 'name'
+        exercises: workout.items?.map(item => ({
+          id: item.id,
+          exercise: item.exercise,
+          sets: item.sets,
+          reps: item.reps,
+          rest: item.restSec || 90, // API usa 'restSec', frontend espera 'rest'
+          orderIndex: item.orderIndex
+        })) || []
+      }));
     },
 
     async get(id) {
       console.log('☁️ [API Adapter] Buscando treino da API:', id);
       const response = await api.get(`/workouts/${id}`);
-      return response.data;
+      const workout = response.data;
+      // Normaliza formato
+      return {
+        ...workout,
+        name: workout.title,
+        exercises: workout.items?.map(item => ({
+          id: item.id,
+          exercise: item.exercise,
+          sets: item.sets,
+          reps: item.reps,
+          rest: item.restSec || 90,
+          orderIndex: item.orderIndex
+        })) || []
+      };
     },
 
     async create(input) {
