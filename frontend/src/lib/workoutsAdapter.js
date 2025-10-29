@@ -81,8 +81,9 @@ function createApiAdapter() {
     async list() {
       console.log('☁️ [API Adapter] Listando treinos da API');
       const response = await api.get('/workouts');
+      console.log('☁️ [API Adapter] Resposta raw da API:', response.data);
       // Normaliza formato da API para o esperado pelo frontend
-      return response.data.map(workout => ({
+      const normalized = response.data.map(workout => ({
         ...workout,
         name: workout.title, // API usa 'title', frontend espera 'name'
         exercises: workout.items?.map(item => ({
@@ -94,6 +95,8 @@ function createApiAdapter() {
           orderIndex: item.orderIndex
         })) || []
       }));
+      console.log('☁️ [API Adapter] Dados normalizados:', normalized);
+      return normalized;
     },
 
     async get(id) {
