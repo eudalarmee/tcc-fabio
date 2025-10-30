@@ -36,6 +36,10 @@ import MeusTreinos from './pages/MeusTreinos';
 import CriarTreino from './pages/CriarTreino';
 import Testimonials from './Testimonials';
 import Banners from './Banners';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminUsers from './pages/AdminUsers';
+import AdminWorkouts from './pages/AdminWorkouts';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Componente de erro caso algo quebre
 function ErrorFallback({ error, resetErrorBoundary }) {
@@ -124,6 +128,23 @@ export default function App() {
               {/* Rotas de Treinos - Disponíveis no modo visitante */}
               <Route path="/meus-treinos" element={<MeusTreinos />} />
               <Route path="/criar-treino" element={<CriarTreino />} />
+              
+              {/* Rotas Admin - Protegidas (exigem autenticação e role ADMIN) */}
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/users" element={
+                <ProtectedRoute>
+                  <AdminUsers />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/workouts" element={
+                <ProtectedRoute>
+                  <AdminWorkouts />
+                </ProtectedRoute>
+              } />
             </Routes>
           </main>
           

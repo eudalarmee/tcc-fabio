@@ -15,7 +15,9 @@ import PlanilhaDetalhes from "./pages/PlanilhaDetalhes";
 import Treinos from "./pages/Treinos";
 import MeusTreinos from "./pages/MeusTreinos";
 import CriarTreino from "./pages/CriarTreino";
-import Admin from "./pages/Admin";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsers from "./pages/AdminUsers";
+import AdminWorkouts from "./pages/AdminWorkouts";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function Router() {
@@ -39,10 +41,20 @@ export default function Router() {
         <Route path="/meus-treinos" element={<MeusTreinos />} />
         <Route path="/criar-treino" element={<CriarTreino />} />
         
-        {/* Rotas Protegidas (exigem autenticação) */}
+        {/* Rotas Admin - Protegidas (exigem autenticação e role ADMIN) */}
         <Route path="/admin" element={
           <ProtectedRoute>
-            <Admin />
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/users" element={
+          <ProtectedRoute>
+            <AdminUsers />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/workouts" element={
+          <ProtectedRoute>
+            <AdminWorkouts />
           </ProtectedRoute>
         } />
         

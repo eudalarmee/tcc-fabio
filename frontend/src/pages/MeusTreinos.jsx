@@ -137,92 +137,174 @@ export default function MeusTreinos() {
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {trainings.map((training) => (
-                <div key={training.id} className="bg-[#151B23] rounded-2xl border border-[#1C2330] overflow-hidden">
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      {editingId === training.id ? (
-                        <input
-                          type="text"
-                          value={editingName}
-                          onChange={(e) => setEditingName(e.target.value)}
-                          className="flex-1 px-4 py-2 bg-[#0D1117] rounded-lg border border-[#FF6A3D] focus:outline-none text-white text-xl font-bold"
-                        />
-                      ) : (
-                        <h3 className="text-2xl font-bold">{training.name}</h3>
-                      )}
+                <div key={training.id} className="bg-[#151B23] rounded-2xl border-2 border-[#1C2330] overflow-hidden hover:border-[#FF6A3D]/50 transition-all duration-300 shadow-xl hover:shadow-[#FF6A3D]/20">
+                  {/* Header do Card */}
+                  <div className="bg-gradient-to-r from-[#FF6A3D]/10 to-[#FF1493]/10 border-b border-[#1C2330] p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        {editingId === training.id ? (
+                          <input
+                            type="text"
+                            value={editingName}
+                            onChange={(e) => setEditingName(e.target.value)}
+                            className="w-full px-4 py-2 bg-[#0D1117] rounded-lg border-2 border-[#FF6A3D] focus:outline-none text-white text-2xl font-bold"
+                            placeholder="Nome do treino..."
+                            autoFocus
+                          />
+                        ) : (
+                          <h3 className="text-3xl font-bold mb-2 bg-gradient-to-r from-white to-[#C7D0DD] bg-clip-text text-transparent">
+                            {training.name}
+                          </h3>
+                        )}
+                        
+                        {/* Info Cards */}
+                        <div className="flex flex-wrap gap-3 mt-4">
+                          <div className="flex items-center gap-2 bg-[#0D1117] px-3 py-2 rounded-lg border border-[#1C2330]">
+                            <span className="text-2xl">💪</span>
+                            <div>
+                              <p className="text-xs text-[#8A95A6]">Exercícios</p>
+                              <p className="text-sm font-bold text-white">{training.exercises?.length || 0}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 bg-[#0D1117] px-3 py-2 rounded-lg border border-[#1C2330]">
+                            <span className="text-2xl">📅</span>
+                            <div>
+                              <p className="text-xs text-[#8A95A6]">Criado em</p>
+                              <p className="text-sm font-bold text-white">
+                                {new Date(training.createdAt).toLocaleDateString('pt-BR')}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          {training.exercises && training.exercises.length > 0 && (
+                            <div className="flex items-center gap-2 bg-[#0D1117] px-3 py-2 rounded-lg border border-[#1C2330]">
+                              <span className="text-2xl">⏱️</span>
+                              <div>
+                                <p className="text-xs text-[#8A95A6]">Tempo estimado</p>
+                                <p className="text-sm font-bold text-white">
+                                  {Math.round(training.exercises.reduce((acc, ex) => {
+                                    const execTime = (ex.sets || 3) * (ex.reps || 10) * 3; // ~3s por rep
+                                    const restTime = (ex.sets || 3) * (ex.rest || 60);
+                                    return acc + execTime + restTime;
+                                  }, 0) / 60)} min
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                       
+                      {/* Botões de Ação */}
                       <div className="flex gap-2 ml-4">
                         {editingId === training.id ? (
                           <>
                             <button
                               onClick={() => saveEdit(training.id)}
-                              className="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-all"
+                              className="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-all shadow-lg hover:shadow-green-600/50 font-medium flex items-center gap-2"
                             >
-                              Salvar
+                              <span>✓</span> Salvar
                             </button>
                             <button
                               onClick={cancelEdit}
-                              className="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition-all"
+                              className="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition-all font-medium"
                             >
-                              Cancelar
+                              ✕ Cancelar
                             </button>
                           </>
                         ) : (
                           <>
                             <button
                               onClick={() => startEdit(training)}
-                              className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-all"
+                              className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-600/50 font-medium flex items-center gap-2"
+                              title="Editar nome do treino"
                             >
-                              Editar
+                              <span>✏️</span> Editar
                             </button>
                             <button
                               onClick={() => handleDelete(training.id)}
-                              className="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition-all"
+                              className="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 font-medium flex items-center gap-2"
+                              title="Excluir treino"
                             >
-                              Excluir
+                              <span>�️</span> Excluir
                             </button>
                           </>
                         )}
                       </div>
                     </div>
+                  </div>
 
-                    <div className="flex items-center gap-4 text-[#C7D0DD] mb-4">
-                      <span className="flex items-center gap-2">
-                        <span className="text-2xl">💪</span>
-                        {training.exercises?.length || 0} exercícios
-                      </span>
-                      <span>•</span>
-                      <span>Criado em {new Date(training.createdAt).toLocaleDateString('pt-BR')}</span>
-                    </div>
-
+                  {/* Conteúdo do Card */}
+                  <div className="p-6">
                     <button
                       onClick={() => toggleExpand(training.id)}
-                      className="w-full py-3 bg-[#0D1117] rounded-lg border border-[#1C2330] hover:border-[#FF6A3D] transition-all duration-200 font-medium"
+                      className="w-full py-4 bg-gradient-to-r from-[#FF6A3D] to-[#FF1493] rounded-xl hover:shadow-lg hover:shadow-[#FF6A3D]/50 transition-all duration-200 font-bold text-lg flex items-center justify-center gap-2"
                     >
-                      {expandedId === training.id ? 'Ocultar Exercícios ▲' : 'Ver Exercícios ▼'}
+                      <span>{expandedId === training.id ? '👁️ Ocultar Exercícios' : '👁️ Ver Exercícios'}</span>
+                      <span>{expandedId === training.id ? '▲' : '▼'}</span>
                     </button>
 
                     {expandedId === training.id && training.exercises && (
-                      <div className="mt-4 space-y-3">
-                        {training.exercises.map((item, index) => (
-                          <div key={item.id} className="bg-[#0D1117] rounded-lg p-4 border border-[#1C2330]">
-                            <div className="flex items-start justify-between">
-                              <div className="flex gap-3">
-                                <span className="text-[#FF6A3D] font-bold text-lg">{index + 1}.</span>
-                                <div>
-                                  <h4 className="font-bold text-lg">{item.exercise.name}</h4>
-                                  <p className="text-[#C7D0DD] text-sm">{item.exercise.muscleGroup}</p>
+                      <div className="mt-6 space-y-3">
+                        {training.exercises.length === 0 ? (
+                          <div className="text-center py-8 text-[#8A95A6]">
+                            <p>Nenhum exercício neste treino ainda.</p>
+                          </div>
+                        ) : (
+                          training.exercises.map((item, index) => (
+                            <div key={item.id} className="bg-[#0D1117] rounded-xl p-5 border-2 border-[#1C2330] hover:border-[#FF6A3D]/30 transition-all duration-200 group">
+                              <div className="flex items-start justify-between">
+                                <div className="flex gap-4 flex-1">
+                                  <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-[#FF6A3D] to-[#FF1493] rounded-lg flex items-center justify-center font-bold text-lg">
+                                    {index + 1}
+                                  </div>
+                                  <div className="flex-1">
+                                    <h4 className="font-bold text-xl mb-1 group-hover:text-[#FF6A3D] transition-colors">
+                                      {item.exercise.name}
+                                    </h4>
+                                    <div className="flex items-center gap-2 text-sm text-[#8A95A6]">
+                                      <span className="px-2 py-1 bg-[#1C2330] rounded-md">
+                                        🎯 {item.exercise.muscleGroup}
+                                      </span>
+                                      {item.exercise.equipment && (
+                                        <span className="px-2 py-1 bg-[#1C2330] rounded-md">
+                                          🏋️ {item.exercise.equipment}
+                                        </span>
+                                      )}
+                                      {item.exercise.difficulty && (
+                                        <span className={`px-2 py-1 rounded-md ${
+                                          item.exercise.difficulty === 'Iniciante' ? 'bg-green-500/20 text-green-400' :
+                                          item.exercise.difficulty === 'Intermediário' ? 'bg-yellow-500/20 text-yellow-400' :
+                                          'bg-red-500/20 text-red-400'
+                                        }`}>
+                                          {item.exercise.difficulty === 'Iniciante' ? '⭐' : 
+                                           item.exercise.difficulty === 'Intermediário' ? '⭐⭐' : '⭐⭐⭐'} 
+                                          {item.exercise.difficulty}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Info do Exercício */}
+                                <div className="flex gap-4 text-right">
+                                  <div className="bg-[#1C2330] px-4 py-2 rounded-lg">
+                                    <p className="text-xs text-[#8A95A6] mb-1">Séries × Reps</p>
+                                    <p className="text-lg font-bold text-white">
+                                      {item.sets} × {item.reps}
+                                    </p>
+                                  </div>
+                                  <div className="bg-[#1C2330] px-4 py-2 rounded-lg">
+                                    <p className="text-xs text-[#8A95A6] mb-1">Descanso</p>
+                                    <p className="text-lg font-bold text-white">{item.rest}s</p>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="text-right text-sm text-[#C7D0DD]">
-                                <p>{item.sets} séries x {item.reps} reps</p>
-                                <p>Descanso: {item.rest}s</p>
-                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))
+                        )}
                       </div>
                     )}
                   </div>

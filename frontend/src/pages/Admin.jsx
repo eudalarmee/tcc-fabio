@@ -1,28 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import AdminLayout from '../components/AdminLayout';
 
 export default function Admin() {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
-  const [activeTab, setActiveTab] = useState('exercises');
-  const [exercises, setExercises] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState(null);
-  
-  // Form states
-  const [showExerciseForm, setShowExerciseForm] = useState(false);
-  const [exerciseForm, setExerciseForm] = useState({
-    name: '',
-    muscleGroup: '',
-    equipment: '',
-    difficulty: '',
-    mediaUrl: ''
-  });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -35,19 +21,19 @@ export default function Admin() {
       return;
     }
     
-    fetchData();
-  }, [isAuthenticated, user, navigate, activeTab]);
+    fetchStats();
+  }, [isAuthenticated, user, navigate]);
 
-  const fetchData = async () => {
+  const fetchStats = async () => {
     try {
       setLoading(true);
-      
-      if (activeTab === 'exercises') {
-        const response = await fetch('http://localhost:5000/api/admin/exercises');
-        const data = await response.json();
-        setExercises(data);
-      } else if (activeTab === 'users') {
-        const response = await fetch('http://localhost:5000/api/admin/users');
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_URL}/api/admin/stats`);
+      if (!response.ok) throw new Error('Erro ao buscar estatísticas');
+      const data = await response.json();
+      setStats(data);
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error);
         const data = await response.json();
         setUsers(data);
       }
