@@ -1,20 +1,33 @@
 /**
- * Serviço de IA - Pronto para múltiplos providers
+ * Serviço de IA - Integração REAL com Google Gemini
  * 
  * Configuração via .env:
- * VITE_AI_PROVIDER = mock | openai | gemini | azure
- * VITE_OPENAI_API_KEY = sk-...
+ * VITE_AI_PROVIDER = gemini
  * VITE_GEMINI_API_KEY = ...
- * VITE_AZURE_ENDPOINT = ...
  */
 
-const AI_PROVIDER = import.meta.env.VITE_AI_PROVIDER || 'mock';
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const AI_PROVIDER = import.meta.env.VITE_AI_PROVIDER;
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const AZURE_ENDPOINT = import.meta.env.VITE_AZURE_ENDPOINT;
+
+// Inicializar o cliente Gemini
+let genAI = null;
+let model = null;
+
+if (GEMINI_API_KEY) {
+  try {
+    genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    console.log('✅ [Gemini] Cliente inicializado com sucesso');
+  } catch (error) {
+    console.error('❌ [Gemini] Erro ao inicializar cliente:', error);
+  }
+}
+
 
 // Mensagem de boas-vindas padrão
-export const WELCOME_MESSAGE = "Olá! Sou a IA da MuscleMax. Posso tirar suas dúvidas sobre treinos, metodologia e como começar agora.";
+export const WELCOME_MESSAGE = "Olá! Sou a assistente inteligente da MuscleMax. Posso te ajudar com estratégias de treino, dúvidas sobre metodologia e orientação personalizada. Pergunte qualquer coisa!";
 
 /**
  * Função principal para enviar mensagem à IA
@@ -23,179 +36,99 @@ export const WELCOME_MESSAGE = "Olá! Sou a IA da MuscleMax. Posso tirar suas d�
  * @returns {Promise<string>} Resposta da IA
  */
 export async function askAI(message, conversationHistory = []) {
+  console.log('🤖 [AI Service] Provider:', AI_PROVIDER);
+  console.log('🔑 [AI Service] Gemini Key:', GEMINI_API_KEY ? 'Configurada ✅' : 'NÃO configurada ❌');
+  
   try {
-    switch (AI_PROVIDER) {
-      case 'openai':
-        return await askOpenAI(message, conversationHistory);
-      
-      case 'gemini':
-        return await askGemini(message, conversationHistory);
-      
-      case 'azure':
-        return await askAzure(message, conversationHistory);
-      
-      case 'mock':
-      default:
-        return await askMock(message, conversationHistory);
+    if (AI_PROVIDER === 'gemini') {
+      return await askGemini(message, conversationHistory);
+    } else {
+      throw new Error(`Provider '${AI_PROVIDER}' não suportado. Use 'gemini'.`);
     }
   } catch (error) {
-    console.error('Erro ao consultar IA:', error);
-    return 'Desculpe, ocorreu um erro. Tente novamente em alguns instantes.';
+    console.error('❌ [AI Service] Erro ao consultar IA:', error);
+    return `Desculpe, ocorreu um erro ao consultar a IA: ${error.message}. Verifique suas configurações.`;
   }
 }
 
 /**
- * MOCK - Respostas simuladas (padrão)
- */
-async function askMock(message, conversationHistory) {
-  // Simula delay de API
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  const msgLower = message.toLowerCase();
-
-  // Respostas contextuais baseadas em palavras-chave
-  if (msgLower.includes('treino') || msgLower.includes('exercicio')) {
-    return "Oferecemos treinos personalizados baseados em ciência! Nossa metodologia foca em periodização científica, análise biomecânica e nutrição integrada. Você pode começar explorando nossas planilhas em destaque na página principal.";
-  }
-
-  if (msgLower.includes('metodologia') || msgLower.includes('como funciona')) {
-    return "Nossa metodologia se baseia em 3 pilares: Periodização Científica (ajuste progressivo de cargas), Análise Biomecânica (técnica perfeita) e Nutrição Integrada (suplementação e dieta). Tudo validado por estudos recentes!";
-  }
-
-  if (msgLower.includes('começar') || msgLower.includes('iniciar') || msgLower.includes('cadastro')) {
-    return "Para começar, clique no botão 'ACESSAR' no topo da página e faça seu cadastro. Você terá acesso às planilhas, acompanhamento personalizado e nossa comunidade exclusiva!";
-  }
-
-  if (msgLower.includes('preço') || msgLower.includes('valor') || msgLower.includes('custo')) {
-    return "Temos planos flexíveis! Entre em contato pelo WhatsApp para conhecer nossas condições especiais e escolher o melhor plano para você. Clique no ícone do WhatsApp no rodapé da página.";
-  }
-
-  if (msgLower.includes('resultado') || msgLower.includes('quanto tempo')) {
-    return "Os resultados variam conforme dedicação e perfil individual. Muitos alunos reportam mudanças significativas entre 8-12 semanas. Confira depoimentos reais na seção 'Resultados' do site!";
-  }
-
-  // Resposta genérica
-  return "Estou em modo de simulação. Em breve estarei respondendo com IA real! Por enquanto, posso ajudar com dúvidas sobre treinos, metodologia, resultados e como começar. O que você gostaria de saber?";
-}
-
-/**
- * OPENAI - Integração com GPT (ChatGPT / GPT-4)
- */
-async function askOpenAI(message, conversationHistory) {
-  if (!OPENAI_API_KEY) {
-    console.warn('VITE_OPENAI_API_KEY não configurada');
-    return await askMock(message, conversationHistory);
-  }
-
-  // TODO: Descomentar quando tiver a API key
-  /*
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${OPENAI_API_KEY}`
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
-      messages: [
-        {
-          role: 'system',
-          content: 'Você é a IA assistente da MuscleMax, uma academia/plataforma de treinos. Seja prestativo, motivador e focado em fitness, musculação e saúde. Responda de forma concisa e amigável.'
-        },
-        ...conversationHistory,
-        {
-          role: 'user',
-          content: message
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 200
-    })
-  });
-
-  const data = await response.json();
-  return data.choices[0].message.content;
-  */
-
-  return await askMock(message, conversationHistory);
-}
-
-/**
- * GEMINI - Integração com Google Gemini
+ * GEMINI - Integração REAL com Google Gemini usando SDK oficial
  */
 async function askGemini(message, conversationHistory) {
+  console.log('🔵 [Gemini] Iniciando chamada à API...');
+  
   if (!GEMINI_API_KEY) {
-    console.warn('VITE_GEMINI_API_KEY não configurada');
-    return await askMock(message, conversationHistory);
+    const errorMsg = '⚠️ VITE_GEMINI_API_KEY não configurada no .env';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
   }
 
-  // TODO: Descomentar quando tiver a API key
-  /*
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `Você é a IA assistente da MuscleMax. Contexto: ${JSON.stringify(conversationHistory)}\n\nUsuário: ${message}`
-              }
-            ]
-          }
-        ]
-      })
+  if (!model) {
+    throw new Error('Modelo Gemini não inicializado. Verifique a API Key.');
+  }
+
+  try {
+    // Construir o prompt do sistema
+    const systemPrompt = `Você é a assistente inteligente da MuscleMax, uma plataforma premium de treinos e performance.
+
+PERSONALIDADE:
+- Tom consultivo e profissional (como um treinador sério e experiente)
+- Respostas objetivas, precisas e diretas
+- Português natural, sem robótico
+- Evite emojis excessivos ou linguagem infantil
+
+CONTEXTO DA MUSCLEMAX:
+- Metodologia baseada em: Periodização Científica, Análise Biomecânica e Nutrição Integrada
+- Focamos em: hipertrofia, definição muscular, performance e estética de competição
+- Oferecemos planilhas personalizadas, acompanhamento profissional e tecnologia de ponta
+- Público-alvo: atletas sérios, pessoas comprometidas com resultados reais
+
+DIRETRIZES DE RESPOSTA:
+1. Inicie com "Para sua fase atual, eu recomendo..." quando der dicas
+2. Seja específico: cite exercícios, divisões de treino (ABC, ABCDE), periodização
+3. Se perguntarem sobre a plataforma, mencione os benefícios da MuscleMax
+4. Respostas curtas (2-4 frases), exceto quando pedirem detalhes
+5. Incentive, mas com seriedade — não seja "motivacional demais"
+`;
+
+    // Construir histórico de conversa no formato do Gemini
+    let fullPrompt = systemPrompt + '\n\n';
+    
+    if (conversationHistory.length > 0) {
+      fullPrompt += 'HISTÓRICO DA CONVERSA:\n';
+      conversationHistory.slice(-4).forEach(msg => {
+        fullPrompt += `${msg.role === 'user' ? 'Usuário' : 'Assistente'}: ${msg.content}\n`;
+      });
+      fullPrompt += '\n';
     }
-  );
 
-  const data = await response.json();
-  return data.candidates[0].content.parts[0].text;
-  */
+    fullPrompt += `Usuário: ${message}\n\nAssistente:`;
 
-  return await askMock(message, conversationHistory);
-}
+    console.log('🔵 [Gemini] Gerando conteúdo...');
+    
+    // Gerar resposta usando o SDK
+    const result = await model.generateContent(fullPrompt);
 
-/**
- * AZURE - Integração com Azure OpenAI
- */
-async function askAzure(message, conversationHistory) {
-  if (!AZURE_ENDPOINT) {
-    console.warn('VITE_AZURE_ENDPOINT não configurado');
-    return await askMock(message, conversationHistory);
+    const response = result.response;
+    const reply = response.text().trim();
+    
+    console.log('✅ [Gemini] Resposta processada:', reply);
+    return reply;
+    
+  } catch (error) {
+    console.error('❌ [Gemini] Erro fatal:', error);
+    
+    // Tratamento específico de erros
+    if (error.message?.includes('429') || error.message?.includes('exhausted')) {
+      throw new Error('Limite de requisições excedido. Aguarde alguns minutos e tente novamente.');
+    }
+    
+    if (error.message?.includes('API key')) {
+      throw new Error('Chave de API inválida. Verifique sua configuração.');
+    }
+    
+    throw new Error(error.message || 'Erro ao se comunicar com a IA. Tente novamente.');
   }
-
-  // TODO: Descomentar quando tiver o endpoint configurado
-  /*
-  const response = await fetch(AZURE_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'api-key': import.meta.env.VITE_AZURE_API_KEY
-    },
-    body: JSON.stringify({
-      messages: [
-        {
-          role: 'system',
-          content: 'Você é a IA assistente da MuscleMax.'
-        },
-        ...conversationHistory,
-        {
-          role: 'user',
-          content: message
-        }
-      ]
-    })
-  });
-
-  const data = await response.json();
-  return data.choices[0].message.content;
-  */
-
-  return await askMock(message, conversationHistory);
 }
 
 /**

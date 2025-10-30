@@ -112,23 +112,25 @@ export default function AIChat() {
 
   return (
     <>
-      {/* Botão flutuante */}
+      {/* Botão flutuante com microinterações */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`
           fixed bottom-6 right-6 z-50
           w-16 h-16 rounded-full
           bg-gradient-to-br from-[#FF6A3D] to-[#FF1493]
-          shadow-2xl hover:shadow-[0_0_30px_rgba(255,106,61,0.5)]
+          shadow-2xl hover:shadow-[0_0_40px_rgba(255,106,61,0.6)]
           flex items-center justify-center
-          transition-all duration-300
+          transition-all duration-500
+          hover:scale-110 hover:rotate-3
           ${isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}
+          group
         `}
         aria-label="Assistente de IA"
       >
         {/* Ícone de chat */}
         <svg 
-          className="w-7 h-7 text-white" 
+          className="w-7 h-7 text-white transition-transform duration-300 group-hover:scale-110" 
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
@@ -140,11 +142,6 @@ export default function AIChat() {
             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
           />
         </svg>
-        
-        {/* Badge de notificação (opcional) */}
-        {!isOpen && messages.length === 1 && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse" />
-        )}
       </button>
 
       {/* Modal do chat */}
@@ -249,7 +246,7 @@ export default function AIChat() {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Digite sua mensagem..."
+              placeholder="Pergunte qualquer coisa sobre treinos ou estratégia..."
               className="flex-1 bg-[#1C2330] text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A3D]"
               disabled={isLoading}
             />
@@ -266,7 +263,7 @@ export default function AIChat() {
           
           {/* Hint */}
           <p className="text-xs text-[#8A95A6] mt-2 text-center">
-            Modo: {import.meta.env.VITE_AI_PROVIDER || 'mock'} • Conversa salva por sessão
+            Assistente inteligente • Respostas em tempo real
           </p>
         </div>
       </div>

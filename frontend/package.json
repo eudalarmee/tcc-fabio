@@ -4,18 +4,27 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
+    "check:front": "node scripts/check-frontend.mjs"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@google/model-viewer": "^4.1.0",
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.4.0",
     "@tailwindcss/vite": "^4.1.10",
+    "axios": "^1.13.0",
+    "idb": "^8.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-error-boundary": "^6.0.0",
     "react-router-dom": "^7.6.2",
-    "three": "^0.172.0"
+    "three": "^0.172.0",
+    "uuid": "^13.0.0",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",

@@ -1,13 +1,25 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('token')
+export default function ProtectedRoute({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
 
-  if (!token) {
-    return <Navigate to="/login" replace />
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block w-12 h-12 border-4 border-[#FF6A3D] border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-[#C7D0DD]">Carregando...</p>
+        </div>
+      </div>
+    );
   }
 
-  return children
-}
+  if (!isAuthenticated) {
+    // Redireciona para login com a URL atual como redirect
+    return <Navigate to={`/login?redirect=${location.pathname}`} replace />;
+  }
 
-export default ProtectedRoute
+  return children;
+}

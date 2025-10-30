@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import AIChat from '../components/AIChat';
+import ImpactStats from '../components/ImpactStats';
+import { useDynamicPhrase } from '../hooks/useDynamicPhrase';
+import { useParallaxMouse } from '../hooks/useParallaxMouse';
 
 export default function Landing() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -13,6 +16,45 @@ export default function Landing() {
   const [uploadedImage, setUploadedImage] = useState(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState(null)
+  
+  // Hook para frase dinâmica por horário
+  const dynamicPhrase = useDynamicPhrase();
+  
+  // Hook para parallax do mouse (efeito cinematográfico)
+  const mousePosition = useParallaxMouse(5);
+  
+  // Estado para controlar idle (sem interação)
+  const [isIdle, setIsIdle] = useState(false);
+
+  // Detectar idle do usuário (2-3 segundos sem interação)
+  useEffect(() => {
+    let idleTimer;
+    
+    const resetIdleTimer = () => {
+      setIsIdle(false);
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        setIsIdle(true);
+      }, 2500); // 2.5 segundos
+    };
+
+    // Eventos que resetam o idle
+    window.addEventListener('mousemove', resetIdleTimer);
+    window.addEventListener('keydown', resetIdleTimer);
+    window.addEventListener('scroll', resetIdleTimer);
+    window.addEventListener('click', resetIdleTimer);
+
+    // Iniciar timer
+    resetIdleTimer();
+
+    return () => {
+      clearTimeout(idleTimer);
+      window.removeEventListener('mousemove', resetIdleTimer);
+      window.removeEventListener('keydown', resetIdleTimer);
+      window.removeEventListener('scroll', resetIdleTimer);
+      window.removeEventListener('click', resetIdleTimer);
+    };
+  }, []);
 
   // Dados mockados de planilhas
   const mockPlanilhas = [
@@ -277,7 +319,7 @@ export default function Landing() {
       {/* ====================================
           HERO SECTION - Iniciar Jornada
           ==================================== */}
-      <section className="group/hero relative h-screen flex items-center justify-center overflow-hidden transition-all duration-700">
+      <section className="group/hero relative min-h-screen flex items-center justify-center overflow-hidden transition-all duration-700 py-20 md:py-0">
         {/* Overlay escuro para legibilidade - intensifica no hover */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70 group-hover/hero:from-black/85 group-hover/hero:via-black/70 group-hover/hero:to-black/85 z-10 transition-all duration-700"></div>
         
@@ -287,46 +329,95 @@ export default function Landing() {
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#FF1493] rounded-full blur-[150px] opacity-20"></div>
         </div>
         
-        {/* Imagem de fundo fitness com parallax e zoom sutil */}
+        {/* Imagem de fundo fitness com parallax sutil (mouse) e zoom */}
         <img 
           src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&h=1080&fit=crop" 
           alt="Atleta profissional em treino intenso na pista" 
-          className="absolute inset-0 w-full h-full object-cover parallax group-hover/hero:scale-105 transition-transform duration-700"
+          className="absolute inset-0 w-full h-full object-cover group-hover/hero:scale-105 transition-transform duration-700"
+          style={{
+            transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) scale(1.05)`
+          }}
         />
 
         {/* Conteúdo centralizado com animações */}
-        <div className="relative z-20 text-center px-4 max-w-5xl">
-          <p className="text-xs md:text-sm uppercase tracking-[0.2em] text-[#C7D0DD] mb-4 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            A PERFEIÇÃO NÃO É UM ACIDENTE
+        <div className="relative z-20 text-center px-6 md:px-4 max-w-5xl mx-auto">
+          <p className="text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.2em] text-[#C7D0DD] mb-4 md:mb-4 animate-fade-in transition-all duration-500" style={{ animationDelay: '0.1s' }}>
+            {dynamicPhrase}
           </p>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            Metodologia científica.<br />
-            Estética de competição.<br />
-            Performance sem limites.
+          {/* Título principal com efeito de glow sutil na palavra ESTÉTICA */}
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-6 md:mb-6 leading-[1.2] md:leading-[1.1] tracking-[-0.02em] animate-fade-in px-2" style={{ animationDelay: '0.3s', fontWeight: '600', letterSpacing: '-0.02em' }}>
+            <span 
+              className={`inline-block transition-all duration-[2000ms] ${
+                isIdle ? 'cinematic-glow' : ''
+              }`}
+            >
+              Estética
+            </span> de competição.<br />
+            Performance sem limites.<br />
+            Metodologia científica.
           </h1>
           
-          {/* Botões de CTA */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+          {/* Botões de CTA com micro respiração */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 md:mb-8 animate-fade-in px-4 sm:px-0" style={{ animationDelay: '0.5s' }}>
             <button 
               onClick={() => scrollToSection('planilhas')}
-              className="btn-primary px-10 py-4"
+              className={`btn-primary px-8 sm:px-10 py-3 sm:py-4 text-sm sm:text-base w-full sm:w-auto transition-all duration-[4000ms] ${
+                isIdle ? 'cinematic-breathe' : ''
+              }`}
             >
               INICIAR JORNADA
             </button>
             <button 
               onClick={() => scrollToSection('metodologia')}
-              className="btn-secondary px-10 py-4"
+              className="btn-secondary px-8 sm:px-10 py-3 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
             >
               VER METODOLOGIA →
             </button>
           </div>
 
-          <p className="text-xs uppercase tracking-wider text-[#8A95A6] animate-fade-in" style={{ animationDelay: '0.7s' }}>
+          <p className="text-[10px] sm:text-xs uppercase tracking-wider text-[#8A95A6] animate-fade-in" style={{ animationDelay: '0.7s' }}>
             Feito para quem não falta.
           </p>
         </div>
       </section>
+
+      {/* Estilos CSS para efeitos cinematográficos */}
+      <style>{`
+        .cinematic-glow {
+          animation: subtleGlow 2s ease-in-out infinite;
+          filter: drop-shadow(0 0 20px rgba(255, 106, 61, 0.4)) drop-shadow(0 0 40px rgba(255, 20, 147, 0.3));
+        }
+        
+        .cinematic-breathe {
+          animation: subtleBreathe 4s ease-in-out infinite;
+        }
+        
+        @keyframes subtleGlow {
+          0%, 100% {
+            filter: drop-shadow(0 0 15px rgba(255, 106, 61, 0.3)) drop-shadow(0 0 30px rgba(255, 20, 147, 0.2));
+            opacity: 1;
+          }
+          50% {
+            filter: drop-shadow(0 0 25px rgba(255, 106, 61, 0.5)) drop-shadow(0 0 50px rgba(255, 20, 147, 0.4));
+            opacity: 0.95;
+          }
+        }
+        
+        @keyframes subtleBreathe {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.02);
+          }
+        }
+      `}</style>
+
+      {/* ====================================
+          CONTADORES DE IMPACTO
+          ==================================== */}
+      <ImpactStats />
 
       {/* ====================================
           SEÇÃO EXERCÍCIOS - Grid 3x2
@@ -367,10 +458,6 @@ export default function Landing() {
                     {exercicio.title}
                   </h3>
                 </div>
-
-                {/* Glow effect no hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" 
-                     style={{ boxShadow: 'inset 0 0 40px rgba(255, 106, 61, 0.3)' }}></div>
               </Link>
             ))}
           </div>
